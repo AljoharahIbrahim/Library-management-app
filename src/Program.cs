@@ -99,14 +99,26 @@ class Library
         try
         {
             _books.Add(book);
-            _emailServices.SendNotificationOnSucess(book.Title);
-            _smsServices.SendNotificationOnSucess(book.Title);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnSucess(book.Title);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnSucess(book.Title);
+            }
         }
         catch (System.Exception ex)
         {
             Console.WriteLine(ex.Message);
-            _emailServices.SendNotificationOnFailure(book.Title);
-            _smsServices.SendNotificationOnFailure(book.Title);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnFailure(book.Title);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnFailure(book.Title);
+            }
         }
     }
     public void addUser(User user)
@@ -114,14 +126,26 @@ class Library
         try
         {
             _users.Add(user);
-            _emailServices.SendNotificationOnSucess(user.Name);
-            _smsServices.SendNotificationOnSucess(user.Name);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnSucess(user.Name);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnSucess(user.Name);
+            }
         }
         catch (System.Exception ex)
         {
             Console.WriteLine(ex.Message);
-            _emailServices.SendNotificationOnFailure(user.Name);
-            _smsServices.SendNotificationOnFailure(user.Name);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnFailure(user.Name);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnFailure(user.Name);
+            }
         }
     }
 
@@ -132,14 +156,25 @@ class Library
         if (findBooksByTitle(book.Title) != null)
         {
             _books.Remove(book);
-            _emailServices.SendNotificationOnSucess(book.Title);
-            _smsServices.SendNotificationOnSucess(book.Title);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnSucess(book.Title);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnSucess(book.Title);
+            }
         }
         else
         {
-            // Console.WriteLine($"sorry , {book.Title} is Not exist if the books list!");
-            _emailServices.SendNotificationOnFailure(book.Title);
-            _smsServices.SendNotificationOnFailure(book.Title);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnFailure(book.Title);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnFailure(book.Title);
+            }
         }
     }
     public void deleteUser(User user)
@@ -148,20 +183,31 @@ class Library
         if (findUsersByName(user) != null)
         {
             _users.Remove(user);
-            _emailServices.SendNotificationOnSucess(user.Name);
-            _smsServices.SendNotificationOnSucess(user.Name);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnSucess(user.Name);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnSucess(user.Name);
+            }
         }
         else
         {
-            // Console.WriteLine($"sorry , {user.Name} is Not exist if the users list!");
-            _emailServices.SendNotificationOnFailure(user.Name);
-            _smsServices.SendNotificationOnFailure(user.Name);
+            if (_emailServices != null)
+            {
+                _emailServices.SendNotificationOnFailure(user.Name);
+            }
+            if (_smsServices != null)
+            {
+                _smsServices.SendNotificationOnFailure(user.Name);
+            }
         }
     }
 
     // Level 3: Use reflection
     public void PrintNotificationServiceInfo()
-    {  
+    {
         if (_emailServices == null)
         {
             Console.WriteLine("smsServices");
