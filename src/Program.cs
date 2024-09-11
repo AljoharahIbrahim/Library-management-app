@@ -159,7 +159,7 @@ class Library
     // Level 3: Use reflection
     public void PrintNotificationServiceInfo()
     {
-        var service = _notificationService.();
+        var service = _notificationService.GetType();
 
             Console.WriteLine(service);
     }
