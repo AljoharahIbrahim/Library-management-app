@@ -50,24 +50,18 @@ class Library
 {
     private List<Book> _books;
     private List<User> _users;
-    private EmailNotificationService _emailServices;
-    private SMSNotificationService _smsServices;
+    private INotificationService _notificationService;
 
-    public Library(EmailNotificationService? emailServices = null, SMSNotificationService? smsServices = null)
+    public Library(INotificationService notificationService)
 
     {
         _books = new List<Book>();
         _users = new List<User>();
-        // _emailServices = emailServices ?? new EmailNotificationService(); 
-        // _smsServices = smsServices ?? new SMSNotificationService();
-        // * or _ Inject 
-        _emailServices = emailServices;
-        _smsServices = smsServices;
+        _notificationService = notificationService;
     }
 
-    public void getallBooks()
+    public void getallBooks(int pageNumber, int pageSize)
     {
-        int pageNumber = 1, pageSize = 3; // assume pageNumber and pageSize
         var results = (_books.OrderBy(book => book.CreatedDate)).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
         foreach (var item in results)
@@ -75,9 +69,8 @@ class Library
             Console.WriteLine($"Title: {item.Title} - Id: {item.Id} - CreatedDate: {item.CreatedDate}");
         }
     }
-    public void getallUsers()
+    public void getallUsers(int pageNumber, int pageSize)
     {
-        int pageNumber = 1, pageSize = 3; // assume pageNumber and pageSize
         var results = _users.OrderBy(user => user.CreatedDate).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
         foreach (var item in results)
         {
@@ -99,26 +92,16 @@ class Library
         try
         {
             _books.Add(book);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnSucess(book.Title);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnSucess(book.Title);
-            }
+
+            _notificationService.SendNotificationOnSucess(book.Title);
+
         }
         catch (System.Exception ex)
         {
             Console.WriteLine(ex.Message);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnFailure(book.Title);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnFailure(book.Title);
-            }
+
+            _notificationService.SendNotificationOnFailure(book.Title);
+
         }
     }
     public void addUser(User user)
@@ -126,26 +109,16 @@ class Library
         try
         {
             _users.Add(user);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnSucess(user.Name);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnSucess(user.Name);
-            }
+
+            _notificationService.SendNotificationOnSucess(user.Name);
+
         }
         catch (System.Exception ex)
         {
             Console.WriteLine(ex.Message);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnFailure(user.Name);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnFailure(user.Name);
-            }
+
+            _notificationService.SendNotificationOnFailure(user.Name);
+
         }
     }
 
@@ -156,68 +129,39 @@ class Library
         if (findBooksByTitle(book.Title) != null)
         {
             _books.Remove(book);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnSucess(book.Title);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnSucess(book.Title);
-            }
+
+            _notificationService.SendNotificationOnSucess(book.Title);
+
+
         }
         else
         {
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnFailure(book.Title);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnFailure(book.Title);
-            }
+
+            _notificationService.SendNotificationOnFailure(book.Title);
+
         }
-    }
+        }
     public void deleteUser(User user)
     {
         // check if the user exist 
         if (findUsersByName(user) != null)
         {
             _users.Remove(user);
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnSucess(user.Name);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnSucess(user.Name);
-            }
+            _notificationService.SendNotificationOnSucess(user.Name);
         }
         else
         {
-            if (_emailServices != null)
-            {
-                _emailServices.SendNotificationOnFailure(user.Name);
-            }
-            if (_smsServices != null)
-            {
-                _smsServices.SendNotificationOnFailure(user.Name);
-            }
+
+            _notificationService.SendNotificationOnFailure(user.Name);
         }
     }
 
     // Level 3: Use reflection
     public void PrintNotificationServiceInfo()
     {
-        if (_emailServices == null)
-        {
-            Console.WriteLine("smsServices");
-        }
-        else
-        {
-            Console.WriteLine("_emailServices");
+        var service = _notificationService.();
 
-        }
-
+            Console.WriteLine(service);
     }
 }
 
@@ -289,11 +233,13 @@ internal class Program
         // var book18 = new Book("Don Quixote", new DateTime(2024, 6, 1));
         // var book19 = new Book("The Iliad");
         // var book20 = new Book("Anna Karenina");
+        // interface INotification inherits by classes: 
         var emailService = new EmailNotificationService();
         var smsService = new SMSNotificationService();
+        // .getType **** l3
         // var libraryWithEmail = new Library(emailService);
         // var libraryWithSMS = new Library(smsService);
-        Library library = new Library(emailService, smsService);
+        Library library = new Library(smsService);
         library.addBook(book2);
         Console.WriteLine("\n");
         library.addBook(book1);
@@ -306,9 +252,9 @@ internal class Program
         Console.WriteLine("\n");
         library.addUser(user9);
         Console.WriteLine("\n\n");
-        library.getallBooks();
+        library.getallBooks(1, 3);
         Console.WriteLine("\n\n");
-        library.getallUsers();
+        library.getallUsers(1, 3);
         Console.WriteLine("\n\n");
         library.findBooksByTitle("The Great Gatsby");
         library.PrintNotificationServiceInfo();
